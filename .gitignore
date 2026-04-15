@@ -1,0 +1,12 @@
+## Arquivos de build do .NET
+bin/
+obj/
+
+## Visual Studio
+.vs/
+
+## Artefatos de referência
+reference/
+
+## Credenciais e configurações locais
+appsettings.Development.json

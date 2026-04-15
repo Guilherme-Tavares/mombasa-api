@@ -1,0 +1,6 @@
+@MombasaAPI_HostAddress = http://localhost:5171
+
+GET {{MombasaAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
