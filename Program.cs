@@ -31,10 +31,16 @@ builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<BovinoProfile>();
     config.AddProfile<ProdutorProfile>();
+    config.AddProfile<TemporadaProfile>();
+    config.AddProfile<MedicamentoProfile>();
+    config.AddProfile<AlimentoProfile>();
 });
 
 builder.Services.AddScoped<BovinoService>();
 builder.Services.AddScoped<ProdutorService>();
+builder.Services.AddScoped<TemporadaService>();
+builder.Services.AddScoped<MedicamentoService>();
+builder.Services.AddScoped<AlimentoService>();
 
 var app = builder.Build();
 
