@@ -39,6 +39,12 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile<RebanhoProfile>();
     config.AddProfile<CochoProfile>();
     config.AddProfile<ForragemProfile>();
+    config.AddProfile<LotacaoProfile>();
+    config.AddProfile<PertencimentoProfile>();
+    config.AddProfile<PassagemTemporadaProfile>();
+    config.AddProfile<AplicacaoMedicamentoProfile>();
+    config.AddProfile<AbastecimentoCochoProfile>();
+    config.AddProfile<EstoqueMedicamentoProfile>();
 });
 
 builder.Services.AddScoped<BovinoService>();
@@ -51,6 +57,12 @@ builder.Services.AddScoped<DivisaoService>();
 builder.Services.AddScoped<RebanhoService>();
 builder.Services.AddScoped<CochoService>();
 builder.Services.AddScoped<ForragemService>();
+builder.Services.AddScoped<LotacaoService>();
+builder.Services.AddScoped<PertencimentoService>();
+builder.Services.AddScoped<PassagemTemporadaService>();
+builder.Services.AddScoped<AplicacaoMedicamentoService>();
+builder.Services.AddScoped<AbastecimentoCochoService>();
+builder.Services.AddScoped<EstoqueMedicamentoService>();
 
 var app = builder.Build();
 
