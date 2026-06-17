@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Alimento;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,20 @@ public class AlimentoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<AlimentoResponseDto>> FindAllV2(AlimentoFilter filter)
+    {
+        var query = _context.Alimentos.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(a => a.Nome.Contains(filter.Search));
+
+        if (filter.Tipo is not null)
+            query = query.Where(a => a.Tipo.ToString() == filter.Tipo);
+
+        return await Paginate<Alimento>.Set<AlimentoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Alimento> GetById(string id)
     {
         var alimento = await _context.Alimentos.FirstOrDefaultAsync(a => a.Id == id);
