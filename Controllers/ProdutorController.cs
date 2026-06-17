@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Produtor;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers
 {
-    [Route("/produtores")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/produtores")]
     public class ProdutorController : ControllerBase
     {
         private readonly ProdutorService _service;

@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Propriedade;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/propriedades")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/propriedades")]
 public class PropriedadeController : ControllerBase
 {
     private readonly PropriedadeService _service;

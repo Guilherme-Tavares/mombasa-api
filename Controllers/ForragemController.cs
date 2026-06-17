@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Forragem;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/forragens")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/forragens")]
 public class ForragemController : ControllerBase
 {
     private readonly ForragemService _service;

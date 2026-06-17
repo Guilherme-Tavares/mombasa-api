@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Temporada;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/temporadas")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/temporadas")]
 public class TemporadaController : ControllerBase
 {
     private readonly TemporadaService _service;

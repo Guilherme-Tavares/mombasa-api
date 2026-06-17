@@ -1,7 +1,9 @@
+﻿using Asp.Versioning;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MombasaAPI.DataContexts;
 using MombasaAPI.Profiles;
 using MombasaAPI.Services;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +16,10 @@ if (!connectionString.Contains("GuidFormat=", StringComparison.OrdinalIgnoreCase
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 32)))
+           .UseSnakeCaseNamingConvention()
 );
 
-// Evita ciclos de referência; enums serializados como strings (ex: "M", "Comprado")
+// Evita ciclos de referencia; enums serializados como strings (ex: "M", "Comprado")
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -24,8 +27,25 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "Agroware Mombasa API v1" });
+    options.SwaggerDoc("v2", new OpenApiInfo { Version = "v2", Title = "Agroware Mombasa API v2" });
+});
 
 builder.Services.AddAutoMapper(config =>
 {
@@ -69,7 +89,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Agroware Mombasa API v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "Agroware Mombasa API v2");
+    });
 }
 
 app.UseAuthorization();

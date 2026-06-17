@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Rebanho;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/rebanhos")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/rebanhos")]
 public class RebanhoController : ControllerBase
 {
     private readonly RebanhoService _service;

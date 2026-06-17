@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Pertencimento;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/pertencimentos")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/pertencimentos")]
 public class PertencimentoController : ControllerBase
 {
     private readonly PertencimentoService _service;

@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Lotacao;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/lotacoes")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/lotacoes")]
 public class LotacaoController : ControllerBase
 {
     private readonly LotacaoService _service;

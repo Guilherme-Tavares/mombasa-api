@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Alimento;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/alimentos")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/alimentos")]
 public class AlimentoController : ControllerBase
 {
     private readonly AlimentoService _service;

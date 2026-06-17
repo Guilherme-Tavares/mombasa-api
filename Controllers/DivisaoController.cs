@@ -1,3 +1,4 @@
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.Divisao;
 using MombasaAPI.Exceptions;
@@ -5,8 +6,9 @@ using MombasaAPI.Services;
 
 namespace MombasaAPI.Controllers;
 
-[Route("/divisoes")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/divisoes")]
 public class DivisaoController : ControllerBase
 {
     private readonly DivisaoService _service;
