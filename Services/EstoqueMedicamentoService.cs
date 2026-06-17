@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.EstoqueMedicamento;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,20 @@ public class EstoqueMedicamentoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<EstoqueMedicamentoResponseDto>> FindAllV2(EstoqueMedicamentoFilter filter)
+    {
+        var query = _context.EstoquesMedicamentos.AsQueryable();
+
+        if (filter.PropriedadeId is not null)
+            query = query.Where(e => e.PropriedadeId == filter.PropriedadeId);
+
+        if (filter.MedicamentoId is not null)
+            query = query.Where(e => e.MedicamentoId == filter.MedicamentoId);
+
+        return await Paginate<EstoqueMedicamento>.Set<EstoqueMedicamentoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<EstoqueMedicamento> GetById(string id)
     {
         var estoque = await _context.EstoquesMedicamentos.FirstOrDefaultAsync(e => e.Id == id);

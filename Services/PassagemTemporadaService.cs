@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.PassagemTemporada;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,20 @@ public class PassagemTemporadaService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<PassagemTemporadaResponseDto>> FindAllV2(PassagemTemporadaFilter filter)
+    {
+        var query = _context.PassagensTemporada.AsQueryable();
+
+        if (filter.RebanhoId is not null)
+            query = query.Where(p => p.RebanhoId == filter.RebanhoId);
+
+        if (filter.TemporadaId is not null)
+            query = query.Where(p => p.TemporadaId == filter.TemporadaId);
+
+        return await Paginate<PassagemTemporada>.Set<PassagemTemporadaResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<PassagemTemporada> GetById(string id)
     {
         var passagem = await _context.PassagensTemporada.FirstOrDefaultAsync(p => p.Id == id);

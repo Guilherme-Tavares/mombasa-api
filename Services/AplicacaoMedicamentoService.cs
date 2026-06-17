@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.AplicacaoMedicamento;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -58,6 +60,20 @@ public class AplicacaoMedicamentoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<AplicacaoMedicamentoResponseDto>> FindAllV2(AplicacaoMedicamentoFilter filter)
+    {
+        var query = _context.AplicacoesMedicamento.AsQueryable();
+
+        if (filter.BovinoId is not null)
+            query = query.Where(a => a.BovinoId == filter.BovinoId);
+
+        if (filter.MedicamentoId is not null)
+            query = query.Where(a => a.MedicamentoId == filter.MedicamentoId);
+
+        return await Paginate<AplicacaoMedicamento>.Set<AplicacaoMedicamentoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<AplicacaoMedicamento> GetById(string id)
     {
         var aplicacao = await _context.AplicacoesMedicamento.FirstOrDefaultAsync(a => a.Id == id);

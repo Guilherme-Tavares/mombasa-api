@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.AbastecimentoCocho;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -58,6 +60,20 @@ public class AbastecimentoCochoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<AbastecimentoCochoResponseDto>> FindAllV2(AbastecimentoCochoFilter filter)
+    {
+        var query = _context.AbastecimentosCochos.AsQueryable();
+
+        if (filter.CochoId is not null)
+            query = query.Where(a => a.CochoId == filter.CochoId);
+
+        if (filter.Esgotado is not null)
+            query = query.Where(a => a.Esgotado == filter.Esgotado);
+
+        return await Paginate<AbastecimentoCocho>.Set<AbastecimentoCochoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<AbastecimentoCocho> GetById(string id)
     {
         var abastecimento = await _context.AbastecimentosCochos.FirstOrDefaultAsync(a => a.Id == id);

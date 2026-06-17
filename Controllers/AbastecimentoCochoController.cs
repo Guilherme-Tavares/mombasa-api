@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.AbastecimentoCocho;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Services;
@@ -9,6 +10,7 @@ namespace MombasaAPI.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Authorize]
 [Route("v{version:apiVersion}/abastecimentos-cocho")]
 public class AbastecimentoCochoController : ControllerBase
@@ -21,9 +23,18 @@ public class AbastecimentoCochoController : ControllerBase
     }
 
     [HttpGet]
+    [MapToApiVersion("1.0")]
     public async Task<IActionResult> FindAll()
     {
         try { return Ok(await _service.FindAll()); }
+        catch (Exception e) { return Problem(e.Message); }
+    }
+
+    [HttpGet]
+    [MapToApiVersion("2.0")]
+    public async Task<IActionResult> FindAllV2([FromQuery] AbastecimentoCochoFilter filter)
+    {
+        try { return Ok(await _service.FindAllV2(filter)); }
         catch (Exception e) { return Problem(e.Message); }
     }
 

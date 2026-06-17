@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Pertencimento;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,20 @@ public class PertencimentoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<PertencimentoResponseDto>> FindAllV2(PertencimentoFilter filter)
+    {
+        var query = _context.Pertencimentos.AsQueryable();
+
+        if (filter.BovinoId is not null)
+            query = query.Where(p => p.BovinoId == filter.BovinoId);
+
+        if (filter.RebanhoId is not null)
+            query = query.Where(p => p.RebanhoId == filter.RebanhoId);
+
+        return await Paginate<Pertencimento>.Set<PertencimentoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Pertencimento> GetById(string id)
     {
         var pertencimento = await _context.Pertencimentos.FirstOrDefaultAsync(p => p.Id == id);

@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Lotacao;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,20 @@ public class LotacaoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<LotacaoResponseDto>> FindAllV2(LotacaoFilter filter)
+    {
+        var query = _context.Lotacoes.AsQueryable();
+
+        if (filter.RebanhoId is not null)
+            query = query.Where(l => l.RebanhoId == filter.RebanhoId);
+
+        if (filter.DivisaoId is not null)
+            query = query.Where(l => l.DivisaoId == filter.DivisaoId);
+
+        return await Paginate<Lotacao>.Set<LotacaoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Lotacao> GetById(string id)
     {
         var lotacao = await _context.Lotacoes.FirstOrDefaultAsync(l => l.Id == id);
