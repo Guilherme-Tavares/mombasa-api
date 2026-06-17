@@ -44,7 +44,7 @@ CREATE TABLE produtor
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE,
     telefone VARCHAR(20),
-    senha VARCHAR(60),
+    senha VARCHAR(256),
     data_cadastro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
     PRIMARY KEY (id_produtor)
@@ -111,7 +111,7 @@ CREATE TABLE bovino
     id_bovino CHAR(36) NOT NULL DEFAULT (UUID()),
     brinco VARCHAR(20) UNIQUE,
     nome VARCHAR(50) NOT NULL,
-    sexo ENUM('M', 'F') NOT NULL,
+    sexo ENUM('m', 'f') NOT NULL,
     raca VARCHAR(50),
     data_nascimento DATE,
     peso_atual_kg DECIMAL(6,2),
