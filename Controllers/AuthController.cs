@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MombasaAPI.Dtos.Auth;
+using MombasaAPI.Dtos.Produtor;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 using MombasaAPI.Services;
@@ -26,6 +27,14 @@ public class AuthController : ControllerBase
         _service = service;
         _hasher = hasher;
         _config = config;
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] ProdutorCreateDto dto)
+    {
+        try { return Created("", await _service.Create(dto)); }
+        catch (ServiceException e) { return e.ToActionResult(this); }
+        catch (Exception e) { return Problem(e.Message); }
     }
 
     [HttpPost("login")]

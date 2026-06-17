@@ -31,7 +31,8 @@ Guilherme Tavares
 
 Execute o script abaixo no MySQL para criar o banco e todas as tabelas:
 
-```sqlCREATE DATABASE agroware_mombasa_legacy;
+`sql
+CREATE DATABASE agroware_mombasa_legacy;
 USE agroware_mombasa_legacy;
 
 -- ============================================
@@ -346,7 +347,19 @@ A API sobe em `http://localhost:5000` por padrão. O Swagger UI fica disponível
 
 ## Autenticação
 
-Todos os endpoints exigem autenticação via JWT Bearer, exceto `POST /v1/auth/login`.
+Dois endpoints não exigem autenticação: `POST /v1/auth/register` e `POST /v1/auth/login`. Todos os demais requerem o header `Authorization: Bearer {token}`.
+
+**Registro:**
+```http
+POST /v1/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Guilherme Tavares",
+  "email": "produtor@email.com",
+  "senha": "senha123"
+}
+```
 
 **Login:**
 ```http
@@ -359,7 +372,7 @@ Content-Type: application/json
 }
 ```
 
-A resposta retorna um `token` que deve ser enviado no header `Authorization: Bearer {token}` nas demais requisições.
+A resposta do login retorna um `token` que deve ser enviado no header `Authorization: Bearer {token}` nas demais requisições.
 
 ## Endpoints
 
