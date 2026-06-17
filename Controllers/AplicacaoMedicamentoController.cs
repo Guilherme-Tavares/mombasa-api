@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MombasaAPI.Dtos.AplicacaoMedicamento;
 using MombasaAPI.Exceptions;
@@ -8,6 +9,7 @@ namespace MombasaAPI.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
+[Authorize]
 [Route("v{version:apiVersion}/aplicacoes-medicamento")]
 public class AplicacaoMedicamentoController : ControllerBase
 {
