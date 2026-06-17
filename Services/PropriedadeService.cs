@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Propriedade;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,24 @@ public class PropriedadeService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<PropriedadeResponseDto>> FindAllV2(PropriedadeFilter filter)
+    {
+        var query = _context.Propriedades.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(p => p.Nome.Contains(filter.Search)
+                                  || (p.Municipio != null && p.Municipio.Contains(filter.Search)));
+
+        if (filter.Estado is not null)
+            query = query.Where(p => p.Estado == filter.Estado);
+
+        if (filter.Ativa is not null)
+            query = query.Where(p => p.Ativa == filter.Ativa);
+
+        return await Paginate<Propriedade>.Set<PropriedadeResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Propriedade> GetById(string id)
     {
         var propriedade = await _context.Propriedades.FirstOrDefaultAsync(p => p.Id == id);

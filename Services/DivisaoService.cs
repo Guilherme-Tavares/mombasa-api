@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Divisao;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,23 @@ public class DivisaoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<DivisaoResponseDto>> FindAllV2(DivisaoFilter filter)
+    {
+        var query = _context.Divisoes.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(d => d.Nome.Contains(filter.Search));
+
+        if (filter.Tipo is not null)
+            query = query.Where(d => d.Tipo.ToString() == filter.Tipo);
+
+        if (filter.Ativa is not null)
+            query = query.Where(d => d.Ativa == filter.Ativa);
+
+        return await Paginate<Divisao>.Set<DivisaoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Divisao> GetById(string id)
     {
         var divisao = await _context.Divisoes.FirstOrDefaultAsync(d => d.Id == id);

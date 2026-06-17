@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Rebanho;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,23 @@ public class RebanhoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<RebanhoResponseDto>> FindAllV2(RebanhoFilter filter)
+    {
+        var query = _context.Rebanhos.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(r => r.Nome.Contains(filter.Search));
+
+        if (filter.Finalidade is not null)
+            query = query.Where(r => r.Finalidade.ToString() == filter.Finalidade);
+
+        if (filter.Ativo is not null)
+            query = query.Where(r => r.Ativo == filter.Ativo);
+
+        return await Paginate<Rebanho>.Set<RebanhoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Rebanho> GetById(string id)
     {
         var rebanho = await _context.Rebanhos.FirstOrDefaultAsync(r => r.Id == id);

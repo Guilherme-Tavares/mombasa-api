@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Forragem;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -58,6 +60,20 @@ public class ForragemService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<ForragemResponseDto>> FindAllV2(ForragemFilter filter)
+    {
+        var query = _context.Forragens.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(f => f.Tipo.Contains(filter.Search));
+
+        if (filter.Ativa is not null)
+            query = query.Where(f => f.Ativa == filter.Ativa);
+
+        return await Paginate<Forragem>.Set<ForragemResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Forragem> GetById(string id)
     {
         var forragem = await _context.Forragens.FirstOrDefaultAsync(f => f.Id == id);

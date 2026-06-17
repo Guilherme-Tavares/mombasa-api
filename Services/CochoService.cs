@@ -1,7 +1,9 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Cocho;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,6 +64,23 @@ public class CochoService
     }
 
     // Busca a entidade ou lança 404
+
+    public async Task<PaginatedResponse<CochoResponseDto>> FindAllV2(CochoFilter filter)
+    {
+        var query = _context.Cochos.AsQueryable();
+
+        if (filter.Search is not null)
+            query = query.Where(c => c.Identificacao != null && c.Identificacao.Contains(filter.Search));
+
+        if (filter.TipoMaterial is not null)
+            query = query.Where(c => c.TipoMaterial.ToString() == filter.TipoMaterial);
+
+        if (filter.Ativo is not null)
+            query = query.Where(c => c.Ativo == filter.Ativo);
+
+        return await Paginate<Cocho>.Set<CochoResponseDto>(query, filter, _mapper);
+    }
+
     private async Task<Cocho> GetById(string id)
     {
         var cocho = await _context.Cochos.FirstOrDefaultAsync(c => c.Id == id);
