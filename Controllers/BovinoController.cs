@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Bovino;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Services;
@@ -9,6 +10,7 @@ namespace MombasaAPI.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Authorize]
     [Route("v{version:apiVersion}/bovinos")]
     public class BovinoController : ControllerBase
@@ -21,11 +23,27 @@ namespace MombasaAPI.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> FindAll()
         {
             try
             {
                 var bovinos = await _service.FindAll();
+                return Ok(bovinos);
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> FindAllV2([FromQuery] BovinoFilter filter)
+        {
+            try
+            {
+                var bovinos = await _service.FindAllV2(filter);
                 return Ok(bovinos);
             }
             catch (Exception e)

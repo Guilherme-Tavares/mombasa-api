@@ -1,8 +1,10 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Bovino;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -62,7 +64,25 @@ namespace MombasaAPI.Services
             await _context.SaveChangesAsync();
         }
 
-        // Busca a entidade ou lança 404
+
+        public async Task<PaginatedResponse<BovinoResponseDto>> FindAllV2(BovinoFilter filter)
+        {
+            var query = _context.Bovinos.AsQueryable();
+
+            if (filter.Search is not null)
+                query = query.Where(b => b.Nome.Contains(filter.Search)
+                                      || (b.Brinco != null && b.Brinco.Contains(filter.Search)));
+
+            if (filter.Sexo is not null)
+                query = query.Where(b => b.Sexo.ToString() == filter.Sexo);
+
+            if (filter.Ativo is not null)
+                query = query.Where(b => b.Ativo == filter.Ativo);
+
+            return await Paginate<Bovino>.Set<BovinoResponseDto>(query, filter, _mapper);
+        }
+
+        // Busca a entidade ou lanca 404        // Busca a entidade ou lança 404
         private async Task<Bovino> GetById(string id)
         {
             var bovino = await _context.Bovinos.FirstOrDefaultAsync(b => b.Id == id);

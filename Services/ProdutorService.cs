@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
+using MombasaAPI.Controllers.Filters;
 using MombasaAPI.Dtos.Produtor;
+using MombasaAPI.Helpers.Paginated;
 using MombasaAPI.Exceptions;
 using MombasaAPI.Models;
 
@@ -33,7 +35,19 @@ namespace MombasaAPI.Services
             return _mapper.Map<ProdutorResponseDto>(produtor);
         }
 
-        // Retorna entidade para uso interno do AuthController
+
+        public async Task<PaginatedResponse<ProdutorResponseDto>> FindAllV2(ProdutorFilter filter)
+        {
+            var query = _context.Produtores.AsQueryable();
+
+            if (filter.Search is not null)
+                query = query.Where(p => p.Nome.Contains(filter.Search)
+                                      || (p.Email != null && p.Email.Contains(filter.Search)));
+
+            return await Paginate<Produtor>.Set<ProdutorResponseDto>(query, filter, _mapper);
+        }
+
+        // Retorna entidade para uso interno do AuthController        // Retorna entidade para uso interno do AuthController
         public async Task<Produtor?> FindByEmail(string email)
         {
             return await _context.Produtores
