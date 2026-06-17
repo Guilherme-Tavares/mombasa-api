@@ -1,5 +1,5 @@
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MombasaAPI.DataContexts;
 using MombasaAPI.Dtos.Produtor;
@@ -12,11 +12,13 @@ namespace MombasaAPI.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher<Produtor> _hasher;
 
-        public ProdutorService(AppDbContext context, IMapper mapper)
+        public ProdutorService(AppDbContext context, IMapper mapper, IPasswordHasher<Produtor> hasher)
         {
             _context = context;
             _mapper = mapper;
+            _hasher = hasher;
         }
 
         public async Task<ICollection<ProdutorResponseDto>> FindAll()
@@ -31,12 +33,22 @@ namespace MombasaAPI.Services
             return _mapper.Map<ProdutorResponseDto>(produtor);
         }
 
+        // Retorna entidade para uso interno do AuthController
+        public async Task<Produtor?> FindByEmail(string email)
+        {
+            return await _context.Produtores
+                .FirstOrDefaultAsync(p => p.Email == email);
+        }
+
         public async Task<ProdutorResponseDto> Create(ProdutorCreateDto data)
         {
             ValidarEmailSenha(data.Email, data.Senha);
             await ValidarEmailUnico(data.Email, excludeId: null);
 
             var produtor = _mapper.Map<Produtor>(data);
+            if (data.Senha is not null)
+                produtor.Senha = _hasher.HashPassword(produtor, data.Senha);
+
             await _context.Produtores.AddAsync(produtor);
             await _context.SaveChangesAsync();
 
@@ -48,10 +60,16 @@ namespace MombasaAPI.Services
             ValidarEmailSenha(data.Email, data.Senha);
 
             var produtor = await GetById(id);
-
             await ValidarEmailUnico(data.Email, excludeId: id);
 
+            var senhaExistente = produtor.Senha;
             _mapper.Map(data, produtor);
+
+            if (data.Senha is not null)
+                produtor.Senha = _hasher.HashPassword(produtor, data.Senha);
+            else
+                produtor.Senha = senhaExistente;
+
             _context.Produtores.Update(produtor);
             await _context.SaveChangesAsync();
 
@@ -65,7 +83,6 @@ namespace MombasaAPI.Services
             await _context.SaveChangesAsync();
         }
 
-        // Busca a entidade ou lança 404
         private async Task<Produtor> GetById(string id)
         {
             var produtor = await _context.Produtores.FirstOrDefaultAsync(p => p.Id == id);
@@ -79,7 +96,7 @@ namespace MombasaAPI.Services
             return produtor;
         }
 
-        // Regra de negócio: email e senha devem ser ambos preenchidos ou ambos nulos (modo offline)
+        // Regra: email e senha devem ser ambos preenchidos ou ambos nulos (modo offline)
         private static void ValidarEmailSenha(string? email, string? senha)
         {
             var temEmail = !string.IsNullOrWhiteSpace(email);
@@ -92,7 +109,6 @@ namespace MombasaAPI.Services
                 );
         }
 
-        // E-mail é único na base — exclui o próprio registro no update
         private async Task ValidarEmailUnico(string? email, string? excludeId)
         {
             if (string.IsNullOrWhiteSpace(email)) return;
