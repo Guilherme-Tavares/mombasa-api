@@ -31,7 +31,7 @@ Guilherme Tavares
 
 Execute o script abaixo no MySQL para criar o banco e todas as tabelas:
 
-`sql
+```sql
 CREATE DATABASE agroware_mombasa_legacy;
 USE agroware_mombasa_legacy;
 
