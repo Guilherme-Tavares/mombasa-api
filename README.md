@@ -326,7 +326,7 @@ CREATE TABLE abastecimento_cocho
 
 Para popular o banco com dados de demonstração (1 propriedade, 20 bovinos, 4 rebanhos e registros relacionados), execute o script abaixo após criar as tabelas. O script é re-executável: limpa as tabelas antes de inserir.
 
-O produtor de exemplo já vem com uma senha utilizável — **e-mail** `admin@mombasa.com`, **senha** `admin.mombasa2026` — permitindo login imediato via `POST /v1/auth/login`.
+O produtor de exemplo já vem com uma senha utilizável (**e-mail** `admin@mombasa.com`, **senha** `admin.mombasa2026`), permitindo login imediato via `POST /v1/auth/login`.
 
 ```sql
 USE agroware_mombasa_legacy;
