@@ -72,8 +72,9 @@ public class AlimentoService
         if (filter.Search is not null)
             query = query.Where(a => a.Nome.Contains(filter.Search));
 
-        if (filter.Tipo is not null)
-            query = query.Where(a => a.Tipo.ToString() == filter.Tipo);
+        if (filter.Tipo is not null
+            && Enum.TryParse<AlimentoTipo>(filter.Tipo, ignoreCase: true, out var tipo))
+            query = query.Where(a => a.Tipo == tipo);
 
         return await Paginate<Alimento>.Set<AlimentoResponseDto>(query, filter, _mapper);
     }

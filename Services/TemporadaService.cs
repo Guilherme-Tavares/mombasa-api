@@ -68,8 +68,9 @@ public class TemporadaService
         if (filter.Search is not null)
             query = query.Where(t => t.Nome.Contains(filter.Search));
 
-        if (filter.Tipo is not null)
-            query = query.Where(t => t.Tipo.ToString() == filter.Tipo);
+        if (filter.Tipo is not null
+            && Enum.TryParse<TemporadaTipo>(filter.Tipo, ignoreCase: true, out var tipo))
+            query = query.Where(t => t.Tipo == tipo);
 
         return await Paginate<Temporada>.Set<TemporadaResponseDto>(query, filter, _mapper);
     }

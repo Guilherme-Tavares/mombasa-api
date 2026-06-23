@@ -73,8 +73,9 @@ namespace MombasaAPI.Services
                 query = query.Where(b => b.Nome.Contains(filter.Search)
                                       || (b.Brinco != null && b.Brinco.Contains(filter.Search)));
 
-            if (filter.Sexo is not null)
-                query = query.Where(b => b.Sexo.ToString() == filter.Sexo);
+            if (filter.Sexo is not null
+                && Enum.TryParse<Sexo>(filter.Sexo, ignoreCase: true, out var sexo))
+                query = query.Where(b => b.Sexo == sexo);
 
             if (filter.Ativo is not null)
                 query = query.Where(b => b.Ativo == filter.Ativo);

@@ -73,8 +73,9 @@ public class MedicamentoService
             query = query.Where(m => m.NomeComercial.Contains(filter.Search)
                                   || (m.PrincipioAtivo != null && m.PrincipioAtivo.Contains(filter.Search)));
 
-        if (filter.Tipo is not null)
-            query = query.Where(m => m.Tipo.ToString() == filter.Tipo);
+        if (filter.Tipo is not null
+            && Enum.TryParse<MedicamentoTipo>(filter.Tipo, ignoreCase: true, out var tipo))
+            query = query.Where(m => m.Tipo == tipo);
 
         return await Paginate<Medicamento>.Set<MedicamentoResponseDto>(query, filter, _mapper);
     }

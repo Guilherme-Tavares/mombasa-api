@@ -72,8 +72,9 @@ public class CochoService
         if (filter.Search is not null)
             query = query.Where(c => c.Identificacao != null && c.Identificacao.Contains(filter.Search));
 
-        if (filter.TipoMaterial is not null)
-            query = query.Where(c => c.TipoMaterial.ToString() == filter.TipoMaterial);
+        if (filter.TipoMaterial is not null
+            && Enum.TryParse<CochoTipoMaterial>(filter.TipoMaterial, ignoreCase: true, out var tipoMaterial))
+            query = query.Where(c => c.TipoMaterial == tipoMaterial);
 
         if (filter.Ativo is not null)
             query = query.Where(c => c.Ativo == filter.Ativo);

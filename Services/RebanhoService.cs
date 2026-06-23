@@ -72,8 +72,9 @@ public class RebanhoService
         if (filter.Search is not null)
             query = query.Where(r => r.Nome.Contains(filter.Search));
 
-        if (filter.Finalidade is not null)
-            query = query.Where(r => r.Finalidade.ToString() == filter.Finalidade);
+        if (filter.Finalidade is not null
+            && Enum.TryParse<RebanhoFinalidade>(filter.Finalidade, ignoreCase: true, out var finalidade))
+            query = query.Where(r => r.Finalidade == finalidade);
 
         if (filter.Ativo is not null)
             query = query.Where(r => r.Ativo == filter.Ativo);

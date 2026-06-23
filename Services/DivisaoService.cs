@@ -72,8 +72,9 @@ public class DivisaoService
         if (filter.Search is not null)
             query = query.Where(d => d.Nome.Contains(filter.Search));
 
-        if (filter.Tipo is not null)
-            query = query.Where(d => d.Tipo.ToString() == filter.Tipo);
+        if (filter.Tipo is not null
+            && Enum.TryParse<DivisaoTipo>(filter.Tipo, ignoreCase: true, out var tipo))
+            query = query.Where(d => d.Tipo == tipo);
 
         if (filter.Ativa is not null)
             query = query.Where(d => d.Ativa == filter.Ativa);
